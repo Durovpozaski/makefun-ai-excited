@@ -1,78 +1,36 @@
-// main.ts — entrypoint for the ai-excited-01 bounty entry.
+// main.ts — entrypoint for the ai-excited-01 dolphin entry.
 //
-// The entry is a single image (entry.jpg) that lives next to this file.
-// The grader runs this program with Node 22 and expects exactly one image
-// written to /output/entry.png. The image content is a JPEG, but the
-// competition accepts a JPEG payload under the .png name, so we copy the
-// file byte for byte and let the grader read it as an image.
+// The image is pre-rendered and shipped in the repository as entry.jpg
+// (a 1024x1024 JPEG, 445 KB). This program's only job is to place that
+// image into the grader's output directory under the name entry.png.
 //
-// The program is deliberately small and dependency-free: it only uses
-// Node's built-in fs, path, and url modules, so it runs the same way on
-// any machine with Node 22.
+// The competition accepts a whole PNG or JPEG up to 1 MiB and up to
+// 1024x1024; the payload here is a JPEG, and the name entry.png is what
+// the harness looks for. Nothing is generated at runtime, nothing is
+// fetched from the network, and the result is fully deterministic: the
+// same input file always produces the same output file.
+//
+// The output directory comes from MAKEFUN_OUTPUT_DIR when the harness
+// sets it, and falls back to /output otherwise.
+import { copyFile, mkdir, stat } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { copyFileSync, existsSync, mkdirSync, statSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+const ONE_MIB = 1024 * 1024;
 
-// The image that ships with this repository.
-const SOURCE_NAME = "entry.jpg";
+const repoRoot = dirname(fileURLToPath(import.meta.url));
+const sourceImage = join(repoRoot, 'entry.jpg');
 
-// Where the grader expects the entry image.
-const OUTPUT_DIR = "/output";
-const OUTPUT_NAME = "entry.png";
+const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const targetImage = join(outputDir, 'entry.png');
 
-// Resolve the directory that holds this file, so the program finds its
-// image no matter which working directory the grader starts it from.
-function repoDir() {
-  return dirname(fileURLToPath(import.meta.url));
+const info = await stat(sourceImage);
+if (info.size > ONE_MIB) {
+  throw new Error(`entry.jpg is ${info.size} bytes, over the 1 MiB limit`);
 }
 
-function sourcePath() {
-  return join(repoDir(), SOURCE_NAME);
-}
+await mkdir(outputDir, { recursive: true });
+await copyFile(sourceImage, targetImage);
 
-function outputPath() {
-  return join(OUTPUT_DIR, OUTPUT_NAME);
-}
-
-// Read the size of a file, or throw a clear error if it is missing.
-function fileSize(path) {
-  if (!existsSync(path)) {
-    throw new Error(`file not found: ${path}`);
-  }
-  const size = statSync(path).size;
-  if (size === 0) {
-    throw new Error(`file is empty: ${path}`);
-  }
-  return size;
-}
-
-// Copy the entry image into the output directory. After copying, read the
-// output back and confirm it has the same size as the source, so a
-// truncated or failed write is caught here instead of at grading time.
-function copyEntry() {
-  const src = sourcePath();
-  const dst = outputPath();
-  const expected = fileSize(src);
-  mkdirSync(OUTPUT_DIR, { recursive: true });
-  copyFileSync(src, dst);
-  const written = fileSize(dst);
-  if (written !== expected) {
-    throw new Error(
-      `output size mismatch: expected ${expected} bytes, wrote ${written}`
-    );
-  }
-  return written;
-}
-
-function main() {
-  try {
-    const bytes = copyEntry();
-    console.log(`entry written: ${outputPath()} (${bytes} bytes)`);
-  } catch (err) {
-    console.error(`failed to write entry image: ${err.message}`);
-    process.exit(1);
-  }
-}
-
-main();
+const written = await stat(targetImage);
+console.log(`wrote ${targetImage} (${written.size} bytes)`);

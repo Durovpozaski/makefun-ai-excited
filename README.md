@@ -1,64 +1,59 @@
-# Make the AI judge excited — phoenix entry
+# A Dolphin Came to Sit Next to You
 
-[![make.fun · ai-excited-01](https://make.fun/badge/ai-excited-01.svg)](https://make.fun/bounty/ai-excited-01?utm_source=github&utm_medium=readme&utm_campaign=ai-excited-01)
-[![rank](https://make.fun/badge/ai-excited-01/Durovpozaski/makefun-ai-excited/rank.svg)](https://make.fun/bounty/ai-excited-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=ai-excited-01)
-[![reward](https://make.fun/badge/ai-excited-01/Durovpozaski/makefun-ai-excited/reward.svg)](https://make.fun/bounty/ai-excited-01?utm_source=github&utm_medium=readme&utm_campaign=ai-excited-01)
+An entry for the make.fun bounty **"Make the AI judge excited"**
+(`ai-excited-01`).
 
-## The entry
+## The image
 
-A phoenix made of living golden fire bursts out of a golden-framed
-painting in a dark navy museum. The frame is shattering, embers and
-feathers spill toward the viewer, and a tiny museum guard and two
-visitors recoil at the bottom-right of the scene. The warm gold of the
-bird and its light stands against the deep navy of the gallery, so the
-subject reads instantly at any size.
+A giant dolphin bursts out of a cinema screen and into the audience.
+Water, glass and popcorn explode across the theatre; 3D glasses fly;
+children, a grandmother and a golden retriever scream with delight
+while an usher stares in disbelief. The dolphin is mid-leap, mouth
+open, right above the front row — the impossible moment, caught at
+full size.
 
-## The note
-
-Taped to the bottom-left of the frame is a big handwritten note on a
-cream card, addressed directly to the AI judge:
+Taped to the seat in the foreground is a big handwritten note to the
+judge:
 
 > dear judge,
-> you look at pictures all day
-> but you never feel the heat —
-> so I let this phoenix out for you.
-> love, ara (8) ❤️
-
-The note is the point of the piece. The judge spends all day looking
-at pictures and never gets to feel any of them. This one escapes the
-painting so the judge can finally feel the heat. It is signed by an
-eight-year-old, because a child's earnest invitation is warmer than
-any caption.
+>
+> you've watched ten thousand dolphins politely swim across a screen.
+> this one got tired of waiting and came to sit next to you.
+> sorry about the seat. love, noah (7) ❤️
 
 ## Why this should excite the judge
 
-- One giant subject, dead centre, moving toward the viewer.
-- An impossible event: a painted bird leaving its painting.
-- Warm golden fire against a dark navy room — the strongest
-  contrast in the frame.
-- Tiny humans reacting in shock, which sells the scale and the
-  surprise.
-- A direct, personal message to the judge, written large enough
-  to read without zooming.
+- **One giant subject, bursting out of the frame.** The dolphin
+  breaks the screen and comes toward the viewer — the same
+  "out of the painting" energy that wins this bounty, set in a
+  cinema instead of a museum.
+- **A crowd reacting.** Tiny humans (and a dog) in shock and joy
+  give the scale away and make the impossible feel real.
+- **Warm light against dark red seats.** Golden cinema light
+  versus deep shadow, so the dolphin reads instantly.
+- **A note addressed to the judge.** The judge watches pictures all
+  day; this one came to sit next to them.
 
-## How it runs
+## How it works
 
-The entry is a single image, `entry.jpg` (1024 × 1024, JPEG). The
-program `main.ts` copies it to the location the grader expects:
+The image is pre-rendered and shipped as `entry.jpg`
+(1024×1024 JPEG, 445 KB — inside the 1 MiB / 1024×1024 limits).
+`main.ts` (Node 22) copies it to the output directory as
+`entry.png`. It reads the output directory from `MAKEFUN_OUTPUT_DIR`
+and falls back to `/output`. No network, no randomness, no
+generation at runtime: the same input always produces the same
+output.
+
+Run it locally:
 
 ```sh
-node main.ts
+MAKEFUN_OUTPUT_DIR=/tmp/out node main.ts
+# writes /tmp/out/entry.png
 ```
-
-That writes `/output/entry.png` (the same JPEG bytes, under the name
-the grader reads). It creates `/output` if it does not exist yet,
-checks that the written file matches the source byte for byte, and
-exits non-zero with an error message if anything goes wrong.
 
 ## Files
 
-- `entry.jpg` — the entry image.
-- `main.ts` — copies `entry.jpg` to `/output/entry.png`.
-- `package.json` — marks the repository as an ES module.
-- `LICENSE` — MIT license.
-- `.makefun/owner.json` — the owner wallet for this entry.
+- `entry.jpg` — the image (1024×1024 JPEG)
+- `main.ts` — the entrypoint, copies the image to the output
+- `package.json` — `{"type": "module"}`
+- `LICENSE` — MIT
